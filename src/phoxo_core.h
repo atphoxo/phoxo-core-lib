@@ -28,6 +28,7 @@
 #include "codec_wic/codec_wic.h"
 
 #include "d2d/render_target.h"
+#include "d2d/svg_drawer.h"
 
 // effect
 #include "effect/basic.h"
