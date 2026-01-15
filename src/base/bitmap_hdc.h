@@ -14,7 +14,7 @@ public:
     /// create DC and select bitmap.
     BitmapHDC(HBITMAP bmp)
     {
-        m_bmp_bak = SelectObject(m_dc, bmp); ASSERT(m_bmp_bak);
+        m_bmp_bak = SelectObject(m_dc, bmp); assert(m_bmp_bak);
         m_font_bak = GetCurrentObject(m_dc, OBJ_FONT);
         SetBkMode(m_dc, TRANSPARENT);
         SetStretchBltMode(m_dc, COLORONCOLOR);
