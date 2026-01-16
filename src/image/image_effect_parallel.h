@@ -8,7 +8,7 @@ private:
     const CRect   m_task_region;
     ImageEffect   & m_effect;
     Image   & m_img;
-    CHandle   m_finish_event;
+    ATL::CHandle   m_finish_event;
     PTP_WORK   m_work = NULL;
 
 public:
