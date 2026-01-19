@@ -34,13 +34,13 @@ private:
         img.ApplyEffect(m_gauss_blur);
     }
 
-    void ProcessChannel(BYTE& dst, const BYTE& origin) const
+    void ProcessChannel(BYTE& dst, BYTE origin) const
     {
         int   diff = origin - dst;
         if (abs(diff) < m_threshold)
             dst = origin;
         else
-            dst = Math::Clamp0255(origin + m_amount * diff / 100);
+            dst = Math::Clamp0255i(origin + m_amount * diff / 100);
     }
 
     void Process(int x, int y, Color& px) const

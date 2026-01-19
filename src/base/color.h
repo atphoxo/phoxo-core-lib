@@ -26,7 +26,7 @@ public:
     {
     }
 
-    explicit constexpr Color(int red, int green, int blue, int alpha = 0xFF) : r((BYTE)red), g((BYTE)green), b((BYTE)blue), a((BYTE)alpha)
+    constexpr Color(int red, int green, int blue, int alpha = 0xFF) : r((BYTE)red), g((BYTE)green), b((BYTE)blue), a((BYTE)alpha)
     {
     }
 

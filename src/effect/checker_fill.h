@@ -13,10 +13,10 @@ private:
 public:
     /// grid_size - width of each grid, >=1
     /// alpha_value - opacity, 0 (transparent) to 255 (opaque)
-    CheckerFill(Color cr1, Color cr2, int grid_size, int alpha_value = 0xFF) : m_cr1(cr1), m_cr2(cr2)
+    CheckerFill(Color cr1, Color cr2, int grid_size, BYTE alpha_value = 0xFF) : m_cr1(cr1), m_cr2(cr2)
     {
         m_size = (std::max)(grid_size, 1);
-        m_cr1.a = m_cr2.a = Math::Clamp0255(alpha_value);
+        m_cr1.a = m_cr2.a = alpha_value;
     }
 
 private:

@@ -36,9 +36,9 @@ private:
         img.ApplyEffect(m_bc);
     }
 
-    static void ProcessChannel(BYTE& dst, const BYTE& origin)
+    static void ProcessChannel(BYTE& dst, BYTE origin)
     {
-        dst = Math::Clamp0255(255 - (255 - origin) * (255 - dst) / 255);
+        dst = Math::Clamp0255i(255 - (255 - origin) * (255 - dst) / 255);
     }
 
     void Process(int x, int y, Color& px) const

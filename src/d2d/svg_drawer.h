@@ -12,7 +12,7 @@ namespace D2D
         {
         }
 
-        explicit SVGDrawer(LPCVOID ptr, UINT length) : m_stream{ phoxo::Utils::CreateMemStream(ptr, length) }
+        explicit SVGDrawer(LPCVOID ptr, UINT length) : m_stream{ Utils::CreateMemStream(ptr, length) }
         {
         }
 
