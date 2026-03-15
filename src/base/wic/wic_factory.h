@@ -1,6 +1,6 @@
 #pragma once
 
-// 这里的函数都依赖 g_factory
+// All functions here depend on the global g_factory
 namespace WIC
 {
     using namespace phoxo;
@@ -25,7 +25,7 @@ namespace WIC
 
     inline IWICBitmapSourcePtr ScaleBitmap(IWICBitmapSource* src, CSize dst_size, WICBitmapInterpolationMode mode = WICBitmapInterpolationModeHighQualityCubic)
     {
-        // sometimes color error when scaling in PBGRA format (?待考证)
+        // sometimes color error when scaling in PBGRA format (? needs further investigation ?)
         if (GetBitmapSize(src) == dst_size)
             return src;
 

@@ -43,7 +43,7 @@ public:
             if (uhVal.HighPart)
                 return uhVal.LowPart / (float)uhVal.HighPart;
             else
-                return 0; // 一些手机max aperture值是0，防止反复弹出assert
+                return 0; // Some phones report max aperture as 0, prevent repeated asserts
         }
         assert(false);
         return 0;

@@ -53,5 +53,5 @@ _PHOXO_NAMESPACE_END
 #include "wic/wic_orientation_tag.h"
 #include "wic/wic_metadata_iterator.h"
 #include "wic/wic_metadata.h"
-#include "wic/wic_factory.h" // 此文件依赖全局 g_factory
-#include "wic/wic_system_codec.h" // 此文件依赖全局 g_factory
+#include "wic/wic_factory.h" // Uses global WIC factory (g_factory)
+#include "wic/wic_system_codec.h" // Uses global WIC factory (g_factory)

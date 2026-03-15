@@ -9,7 +9,8 @@ namespace WIC
         {
             orientation = std::clamp(orientation, 1, 8);
 
-            // 不旋转也不要用 RemoveMetadataByName 删除tag，否则只旋转tag时fast encode会失败
+            // When the image is not rotated, do not remove the orientation tag,
+            // as fast encoding may fail if only the tag is modified
             CComPROPVARIANT   prop((USHORT)orientation);
             if (writer && (writer->SetMetadataByName(OrientationKeyJpeg, &prop) == S_OK))
                 return true;

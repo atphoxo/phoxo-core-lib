@@ -60,7 +60,7 @@ namespace WIC
             {
                 IWICMetadataReaderPtr   t;
                 block->GetReaderByIndex(i, &t);
-                m_waiting.push_back(t); // 用的时候会验证为空
+                m_waiting.push_back(t); // Null pointers will be verified at usage
             }
         }
 
