@@ -25,7 +25,7 @@ private:
     int   m_stride = 0;
     uint16_t   m_attribute = 0;
     uint16_t   m_bpp = 0;
-    BYTE   * m_pixel = nullptr;
+    BYTE*   m_pixel = nullptr;
     HBITMAP   m_DIB_Handle = nullptr;
 
 public:
@@ -92,9 +92,6 @@ public:
     /// destroy the image
     void Destroy()
     {
-#ifndef NDEBUG
-        ClearBuffer(0);
-#endif
         if (m_DIB_Handle) { DeleteObject(m_DIB_Handle); }
         InitMember();
     }
