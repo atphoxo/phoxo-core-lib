@@ -3,6 +3,7 @@
 _PHOXO_BEGIN
 
 /// Sampling helper: computes the weighted average color of a sub pixel area.
+/// Strongly recommended to enable AVX optimization; on 400M-pixel images, performance can improve by ~3x.
 class SamplingAreaBox
 {
 private:

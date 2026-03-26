@@ -72,13 +72,23 @@ public:
     static void Premultiply(Image& img)
     {
         PixelSpan   pv{ img };
-        if (!pv || img.IsPremultiplied())
-        {
-            assert(false); return;
-        }
+        if (!pv || img.IsPremultiplied()) { assert(false); return; }
 
         pv.ForEachPixel([](auto& px) { PixelFunc::Premultiply(px); });
         img.SetPremultiplied(true);
+    }
+
+    static void ApplyBackground(Image& img, Color bk)
+    {
+        PixelSpan   pv{ img };
+        if (!pv || img.IsPremultiplied()) { assert(false); return; }
+
+        pv.ForEachPixel([bk](auto& px)
+        {
+            Color   up = px;
+            px = bk;
+            PixelFunc::BlendStraightAlpha(px, up);
+        });
     }
 
 public:
