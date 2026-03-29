@@ -72,7 +72,7 @@ public:
         Image   img;
         if (img.Create(width, height, bpp, attr))
         {
-            BitmapData   bd{ width, height, img.Stride(), output_format, img.GetMemStart() };
+            BitmapData   bd{ width, height, img.Stride(), output_format, img.PixelBase() };
             Rect   rgn(0, 0, width, height);
             if (src.LockBits(&rgn, ImageLockModeRead | ImageLockModeUserInputBuf, output_format, &bd) == Ok)
             {
@@ -93,7 +93,7 @@ public:
         if (Image img; img.Create(sz, bpp, attr))
         {
             // 如果没装hevc ext, heif文件CopyPixels返回0xc00d5212 (Unsupported File Format)
-            if (src->CopyPixels(NULL, img.Stride(), img.PixelBufferSize(), img.GetMemStart()) == S_OK)
+            if (src->CopyPixels(NULL, img.Stride(), img.PixelBufferBytes(), img.PixelBase()) == S_OK)
                 return img;
             assert(false);
         }

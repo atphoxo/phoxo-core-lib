@@ -14,7 +14,7 @@ public:
             assert(false); return nullptr;
         }
 
-        return make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.Stride(), GetPixelFormat(img), img.GetMemStart());
+        return make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.Stride(), GetPixelFormat(img), img.PixelBase());
     }
 
 private:

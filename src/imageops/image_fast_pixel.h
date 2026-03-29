@@ -103,7 +103,7 @@ public:
             if (img.ColorBits() == 32)
             {
                 int   count = img.Width() * img.Height();
-                begin = (Color*)img.GetMemStart();
+                begin = (Color*)img.PixelBase();
                 end = begin + count;
                 use_parallel = count > parallel_threshold; // 0.5M pixels
             }

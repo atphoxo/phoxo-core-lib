@@ -47,7 +47,7 @@ public:
 
         if (Create(img.Size(), img.m_bpp, img.m_attribute))
         {
-            memcpy(m_pixel, img.m_pixel, img.PixelBufferSize());
+            memcpy(m_pixel, img.m_pixel, img.PixelBufferBytes());
         }
         return *this;
     }
@@ -119,7 +119,7 @@ public:
     /// fill the pixel buffer with a byte value (default 0)
     void ClearBuffer(BYTE v = 0)
     {
-        if (m_pixel) { memset(m_pixel, v, PixelBufferSize()); }
+        if (m_pixel) { memset(m_pixel, v, PixelBufferBytes()); }
     }
     /// @}
 
@@ -152,8 +152,8 @@ public:
     int Height() const { return m_height; }
     int ColorBits() const { return m_bpp; }
     int Stride() const { return m_stride; }
-    int PixelBufferSize() const { return m_stride * m_height; } ///< buffer size in bytes
-    BYTE* GetMemStart() const { return m_pixel; } ///< pointer to pixel buffer
+    int PixelBufferBytes() const { return m_stride * m_height; } ///< buffer size in bytes
+    BYTE* PixelBase() const { return m_pixel; } ///< pointer to pixel buffer
     int Attribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
     explicit operator bool() const { return m_pixel != 0; }

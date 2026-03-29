@@ -23,14 +23,14 @@ private:
 
     static HGLOBAL CreateImageData(Image& img)
     {
-        auto   mem = GlobalAlloc(GMEM_MOVEABLE, img.PixelBufferSize() + sizeof(BITMAPINFOHEADER));
+        auto   mem = GlobalAlloc(GMEM_MOVEABLE, img.PixelBufferBytes() + sizeof(BITMAPINFOHEADER));
         auto   ptr = (BITMAPINFOHEADER*)GlobalLock(mem);
         *ptr = { sizeof(*ptr), img.Width(), img.Height(), 1, (WORD)img.ColorBits() };
 
         Image   tmp;
         tmp.Attach32bppBuffer(img.Width(), img.Height(), ptr + 1);
 
-        CopyMemory(tmp.GetMemStart(), img.GetMemStart(), img.PixelBufferSize());
+        CopyMemory(tmp.PixelBase(), img.PixelBase(), img.PixelBufferBytes());
         Flip   eff;
         eff.EnableParallel();
         tmp.ApplyEffect(eff);
