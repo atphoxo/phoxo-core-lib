@@ -22,19 +22,17 @@ public:
     int32_t   val;
 
 public:
-    constexpr Color() : val(0)
+    constexpr Color() : val(0) {}
+
+    explicit constexpr Color(RGBQUAD c) : quad(c) {}
+    explicit constexpr Color(int32_t c) : val(c) {}
+
+    constexpr Color(int32_t c, int alpha) : val(c)
     {
+        a = (BYTE)alpha;
     }
 
     constexpr Color(int red, int green, int blue, int alpha = 0xFF) : r((BYTE)red), g((BYTE)green), b((BYTE)blue), a((BYTE)alpha)
-    {
-    }
-
-    explicit constexpr Color(RGBQUAD c) : quad(c)
-    {
-    }
-
-    explicit constexpr Color(int32_t c) : val(c)
     {
     }
 

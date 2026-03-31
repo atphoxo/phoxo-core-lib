@@ -1,57 +1,71 @@
 #pragma once
 
-class CWICFileEncoder
+_PHOXO_NAMESPACE(WIC)
+class ImageEncoder
 {
 private:
-    GUID   m_image_format = {};
+    const GUID   m_image_format{};
     IWICBitmapEncoderPtr   m_encoder;
-    IWICStreamPtr   m_stream;
+    IStreamPtr   m_stream;
     IWICBitmapFrameEncodePtr   m_frame_encode;
 
-public:
-    CWICFileEncoder(PCWSTR filepath, int jpeg_quality = 80)
+private:
+    bool InitCreateEncoder()
     {
-        m_image_format = WIC::GetSystemCodecFormat(filepath);
-        [[maybe_unused]] HRESULT   hr = WIC::g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
+        [[maybe_unused]] HRESULT hr = g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
         if (!m_encoder)
         {
             assert(hr == WINCODEC_ERR_COMPONENTNOTFOUND); // 不支持的图像编码格式
-            return;
         }
-
-        try
-        {
-            WIC::g_factory->CreateStream(&m_stream);
-            if (m_stream->InitializeFromFilename(filepath, GENERIC_WRITE) == S_OK) // 如果文件写保护会失败
-            {
-                m_encoder->Initialize(m_stream, WICBitmapEncoderNoCache);
-                CreateFrameEncode(jpeg_quality);
-            }
-        }
-        catch (_com_error&) {}
-        assert(IsEncoderAvailable());
+        return m_encoder != nullptr;
     }
 
-    bool IsEncoderAvailable() const
+    bool InitStreamFromFile(PCWSTR filepath)
     {
-        return m_frame_encode != NULL;
+        IWICStreamPtr   tmp;
+        g_factory->CreateStream(&tmp);
+        m_stream = tmp;
+        return (tmp->InitializeFromFilename(filepath, GENERIC_WRITE) == S_OK); // 如果文件写保护会失败
     }
 
+public:
+    explicit ImageEncoder(REFGUID image_format, int jpeg_quality = 80) : m_image_format{ image_format }
+    {
+        if (!InitCreateEncoder())
+            return;
+        CreateStreamOnHGlobal(NULL, TRUE, &m_stream);
+
+        m_encoder->Initialize(m_stream, WICBitmapEncoderNoCache);
+        CreateFrameEncode(jpeg_quality);
+    }
+
+    explicit ImageEncoder(PCWSTR filepath, int jpeg_quality = 80) : m_image_format{ GetSystemCodecFormat(filepath) }
+    {
+        if (!InitCreateEncoder())
+            return;
+        if (!InitStreamFromFile(filepath))
+            return;
+
+        m_encoder->Initialize(m_stream, WICBitmapEncoderNoCache);
+        CreateFrameEncode(jpeg_quality);
+    }
+
+    bool IsEncoderAvailable() const { return m_frame_encode != NULL; }
     bool IsJPEG() const { return m_image_format == GUID_ContainerFormatJpeg; }
 
-/*    void CopyMetadata(IWICBitmapFrameDecodePtr source_meta)
-    {
-        IWICMetadataBlockReaderPtr   reader = source_meta;
-        IWICMetadataBlockWriterPtr   writer = m_frame_encode;
-        if (writer && reader)
+    /*    void CopyMetadata(IWICBitmapFrameDecodePtr source_meta)
         {
-            writer->InitializeFromBlockReader(reader);
+            IWICMetadataBlockReaderPtr   reader = source_meta;
+            IWICMetadataBlockWriterPtr   writer = m_frame_encode;
+            if (writer && reader)
+            {
+                writer->InitializeFromBlockReader(reader);
 
-            IWICMetadataQueryWriterPtr   orient;
-            m_frame_encode->GetMetadataQueryWriter(&orient);
-            WIC::OrientationTag::Write(orient, 1); // clear orientation tag
-        }
-    }*/
+                IWICMetadataQueryWriterPtr   orient;
+                m_frame_encode->GetMetadataQueryWriter(&orient);
+                WIC::OrientationTag::Write(orient, 1); // clear orientation tag
+            }
+        }*/
 
     void SetICC(IWICColorContext* icc)
     {
@@ -61,26 +75,32 @@ public:
         }
     }
 
-    bool WriteFile(IWICBitmapSource* src)
+    bool Write(IWICBitmapSource* src)
     {
         try
         {
-            bool ok = (m_frame_encode->WriteSource(src, NULL) == S_OK); assert(ok);
-            if (!ok) return false;
+            HRESULT hr = m_frame_encode->WriteSource(src, NULL);
+            if (FAILED(hr)) { assert(false); return false; }
 
-            ok = (m_frame_encode->Commit() == S_OK); assert(ok);
-            if (!ok) return false;
+            hr = m_frame_encode->Commit();
+            if (FAILED(hr)) { assert(false); return false; }
 
-            ok = (m_encoder->Commit() == S_OK); assert(ok);
-            if (!ok) return false;
+            hr = m_encoder->Commit();
+            if (FAILED(hr)) { assert(false); return false; }
 
             return true;
         }
         catch (_com_error&)
         {
-            assert(false);
-            return false;
+            assert(false); return false;
         }
+    }
+
+    HGLOBAL GetEncodedMemory() const
+    {
+        HGLOBAL   mem{};
+        ::GetHGlobalFromStream(m_stream, &mem);
+        return mem;
     }
 
 private:
@@ -108,7 +128,7 @@ private:
         {
             IWICMetadataQueryWriterPtr   writer;
             m_frame_encode->GetMetadataQueryWriter(&writer);
-            WIC::OrientationTag::Write(writer, orientation);
+            OrientationTag::Write(writer, orientation);
         }
     }
 
@@ -134,6 +154,7 @@ private:
             }
         }
         catch (_com_error&) { assert(false); }
+        assert(IsEncoderAvailable());
     }
 
     static void WriteImageQualityProperty(IPropertyBag2* prop, float quality)
@@ -144,3 +165,4 @@ private:
         if (prop) { prop->Write(1, &str, &val); }
     }
 };
+_PHOXO_NAMESPACE_END
