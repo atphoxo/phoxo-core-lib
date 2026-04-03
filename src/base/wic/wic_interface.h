@@ -37,7 +37,7 @@ _COM_SMARTPTR_TYPEDEF(IWICStream, __uuidof(IWICStream));
 namespace WIC
 {
     // 超过此尺寸，WIC 会返回有符号整数溢出错误
-    inline constexpr int  MAX_BITMAP_PIXELS = 0x7FFFFFFF / 4 - 100; // 100 is not necessary
+    inline constexpr int  MAX_BITMAP_PIXELS = 0x7FFFFFFF / 4;
 
     inline IWICBitmapFrameDecodePtr GetFrame(IWICBitmapDecoder* decoder, UINT index)
     {

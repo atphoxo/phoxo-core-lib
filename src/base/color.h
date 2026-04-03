@@ -27,6 +27,8 @@ public:
     explicit constexpr Color(RGBQUAD c) : quad(c) {}
     explicit constexpr Color(int32_t c) : val(c) {}
 
+    /// Initialize using Gdiplus: Color c(Gdiplus::Color::Red);
+    /// Initialize using D2D: Color c(D2D1::ColorF::Red, 0xFF);
     constexpr Color(int32_t c, int alpha) : val(c)
     {
         a = (BYTE)alpha;
