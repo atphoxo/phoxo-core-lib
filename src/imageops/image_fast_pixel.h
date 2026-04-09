@@ -9,20 +9,26 @@ public:
     /// parallel if pixels exceed
     static inline int   parallel_threshold = 500'000;
 
-    /// Returns true if all pixels have alpha == 0xFF
-    static bool IsFullyOpaque(const Image& img)
+    /// Returns true if all pixels have the specified alpha value
+    static bool IsAllPixelAlphaSame(const Image& img, BYTE alpha)
     {
         PixelSpan   pv{ img };
         if (!pv)
             return false;
 
-        auto   func = [](const auto& px) { return px.a == 0xFF; };
+        auto   func = [alpha](const auto& px) { return px.a == alpha; };
 
         if (pv.use_parallel)
             return std::all_of(std::execution::par, pv.begin, pv.end, func);
         else
             return std::all_of(pv.begin, pv.end, func);
     }
+
+    /// Returns true if all pixels are fully transparent (alpha == 0)
+    static bool IsFullyTransparent(const Image& img) { return IsAllPixelAlphaSame(img, 0); }
+
+    /// Returns true if all pixels are fully opaque (alpha == 255)
+    static bool IsFullyOpaque(const Image& img) { return IsAllPixelAlphaSame(img, 0xFF); }
 
     /// Fills RGB of all pixels to the specified color, keeping alpha unchanged
     static void FillRGBKeepAlpha(Image& img, Color clr)
