@@ -38,7 +38,6 @@
 #include "effect/unsharp_mask.h"
 #include "effect/soft_glow.h"
 
-#include "effect/clipboard.h"
 #include "effect/resize_gdiplus.h"
 #include "effect/resize_wic.h"
 #include "effect/text_shadow.h"

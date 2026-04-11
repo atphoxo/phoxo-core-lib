@@ -140,12 +140,19 @@ private:
             {
                 IPropertyBag2Ptr   prop;
                 m_encoder->CreateNewFrame(&m_frame_encode, &prop);
-                WriteImageQualityProperty(prop, jpeg_quality / 100.0f);
+                WriteProperty(prop, L"ImageQuality", (float)jpeg_quality / 100.0f);
                 m_frame_encode->Initialize(prop);
 
                 // if there is no orientation tag, fast rotation of JPEG may fail later
                 if (IsJPEG())
                     SetOrientationTag(1);
+            }
+            else if (m_image_format == GUID_ContainerFormatBmp)
+            {
+                IPropertyBag2Ptr   prop;
+                m_encoder->CreateNewFrame(&m_frame_encode, &prop);
+                WriteProperty(prop, L"EnableV5Header32bppBGRA", VARIANT_TRUE, VT_BOOL);
+                m_frame_encode->Initialize(prop);
             }
             else
             {
@@ -157,11 +164,14 @@ private:
         assert(IsEncoderAvailable());
     }
 
-    static void WriteImageQualityProperty(IPropertyBag2* prop, float quality)
+    template<typename T>
+    static void WriteProperty(IPropertyBag2* prop, std::wstring propname, T value, VARTYPE type = VT_EMPTY)
     {
-        _variant_t   val(quality);
-        WCHAR   prop_name[] = L"ImageQuality";
-        PROPBAG2   str = { .pstrName = prop_name };
+        _variant_t   val(value);
+        if (type == VT_BOOL)
+            val.vt = type;
+
+        PROPBAG2   str = { .pstrName = propname.data() }; // requires writable pointer
         if (prop) { prop->Write(1, &str, &val); }
     }
 };

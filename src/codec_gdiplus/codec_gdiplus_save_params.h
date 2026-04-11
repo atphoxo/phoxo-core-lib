@@ -10,13 +10,13 @@ struct GdiplusSaveParams
     ULONG   m_jpeg_quality;
     unique_ptr<Gdiplus::EncoderParameters>   m_encoder_param;
 
-    GdiplusSaveParams(PCWSTR filepath, int jpeg_quality)
+    GdiplusSaveParams(PCWSTR filepath, int jpeg_quality = 0)
     {
-        auto   image_type = ImageFileExtParser::GetType(filepath);
-        m_type_CLSID = GetEncoderClsid(image_type);
+        auto   imgtype = ImageFileExtParser::GetType(filepath);
+        m_type_CLSID = GetEncoderClsid(imgtype);
         m_jpeg_quality = jpeg_quality;
 
-        if ((image_type == ImageFormat::Jpeg) && jpeg_quality)
+        if ((imgtype == ImageFormat::Jpeg) && jpeg_quality)
         {
             m_encoder_param = make_unique<Gdiplus::EncoderParameters>();
             m_encoder_param->Count = 1;
@@ -40,17 +40,19 @@ private:
         return GUID_NULL;
     }
 
-    static CLSID GetEncoderClsid(ImageFormat img_type)
+    static CLSID GetEncoderClsid(ImageFormat imgtype)
     {
-        UINT   num = 0, buf_size = 0;
-        Gdiplus::GetImageEncodersSize(&num, &buf_size);
-        if (num && buf_size)
-        {
-            std::vector<BYTE>   tempbuf(buf_size);
-            auto   info = (Gdiplus::ImageCodecInfo*)tempbuf.data();
-            Gdiplus::GetImageEncoders(num, buf_size, info);
+        using namespace Gdiplus;
 
-            GUID   fmtid = GetFormatGUID(img_type);
+        UINT   num = 0, bufsize = 0;
+        GetImageEncodersSize(&num, &bufsize);
+        if (num && bufsize)
+        {
+            std::vector<BYTE>   tempbuf(bufsize);
+            auto   info = (ImageCodecInfo*)tempbuf.data();
+            GetImageEncoders(num, bufsize, info);
+
+            GUID   fmtid = GetFormatGUID(imgtype);
             for (UINT i = 0; i < num; i++)
             {
                 if (info[i].FormatID == fmtid)
