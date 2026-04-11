@@ -6,34 +6,6 @@
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
 
-struct HGlobalUtil
-{
-    static HGLOBAL Alloc(SIZE_T size)
-    {
-        return ::GlobalAlloc(GMEM_MOVEABLE, size);
-    }
-
-    static HGLOBAL FromMemory(LPCVOID data, SIZE_T size)
-    {
-        if (!data || !size)
-            return NULL;
-        HGLOBAL   global = Alloc(size);
-        if (!global)
-            return NULL;
-        void*   ptr = GlobalLock(global);
-        if (!ptr)
-        {
-            GlobalFree(global);
-            return NULL;
-        }
-        memcpy(ptr, data, size);
-        GlobalUnlock(global);
-        return global;
-    }
-
-    static HGLOBAL FromValue(DWORD v) { return FromMemory(&v, sizeof(v)); }
-};
-
 /// Copy image to clipboard (32 bit).
 class CopyToClipboard : public ImageEffect
 {
@@ -49,9 +21,9 @@ private:
         return ProcessMode::EntireMyself;
     }
 
-    static HGLOBAL CreateImageData(const Image& img)
+    static HGLOBAL CreateClipboardDIB(const Image& img)
     {
-        HGLOBAL   global = HGlobalUtil::Alloc(sizeof(BITMAPINFOHEADER) + img.PixelBufferBytes());
+        HGLOBAL   global = HGlobalFactory::Alloc(sizeof(BITMAPINFOHEADER) + img.PixelBufferBytes());
         if (!global)
             return NULL;
         auto*   ptr = (BITMAPINFOHEADER*)GlobalLock(global);
@@ -74,7 +46,7 @@ private:
         if (StreamHGlobalView view(stm); view)
         {
             UINT   fmt = ::RegisterClipboardFormat(L"PNG");
-            SetClipboardData(fmt, HGlobalUtil::FromMemory(view.m_data, view.m_size));
+            SetClipboardData(fmt, HGlobalFactory::FromMemory(view.m_data, view.m_size));
         }
     }
 
@@ -89,7 +61,7 @@ private:
         buf.append((const BYTE*)m_filepath.GetString(), m_filepath.GetLength() * 2);
         buf.append(4, 0); // need double 0
 
-        return HGlobalUtil::FromMemory(buf.data(), buf.size());
+        return HGlobalFactory::FromMemory(buf.data(), buf.size());
     }
 
     void CopyFileObject() const
@@ -97,7 +69,7 @@ private:
         if (HGLOBAL fobj = CreateFileObject())
         {
             SetClipboardData(CF_HDROP, fobj);
-            SetClipboardData(RegisterClipboardFormat(CFSTR_PREFERREDDROPEFFECT), HGlobalUtil::FromValue(DROPEFFECT_COPY));
+            SetClipboardData(RegisterClipboardFormat(CFSTR_PREFERREDDROPEFFECT), HGlobalFactory::FromValue(DROPEFFECT_COPY));
         }
     }
 
@@ -107,7 +79,7 @@ private:
             return;
 
         ::EmptyClipboard();
-        SetClipboardData(CF_DIB, CreateImageData(img));
+        SetClipboardData(CF_DIB, CreateClipboardDIB(img));
         if (!ImageFastPixel::IsFullyOpaque(img))
         {
             SetClipboardPNG(img);

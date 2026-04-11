@@ -5,30 +5,6 @@
 
 _PHOXO_BEGIN
 
-struct StreamHGlobalView
-{
-    IStreamPtr   m_stream;
-    HGLOBAL   m_global{};
-    void*   m_data{};
-    SIZE_T   m_size{};
-
-    explicit operator bool() const { return m_data && m_size; }
-
-    StreamHGlobalView(IStream* sp) : m_stream(sp)
-    {
-        if (sp && SUCCEEDED(::GetHGlobalFromStream(sp, &m_global)) && m_global)
-        {
-            m_data = GlobalLock(m_global);
-            m_size = GlobalSize(m_global);
-        }
-    }
-
-    ~StreamHGlobalView()
-    {
-        if (m_data) { GlobalUnlock(m_global); }
-    }
-};
-
 /// Read / Write image using Gdi+.
 class CodecGdiplus
 {

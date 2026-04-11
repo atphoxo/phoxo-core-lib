@@ -1,6 +1,7 @@
 #pragma once
 
 _PHOXO_NAMESPACE(WIC)
+
 class ImageEncoder
 {
 private:
@@ -15,7 +16,7 @@ private:
         [[maybe_unused]] HRESULT hr = g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
         if (!m_encoder)
         {
-            assert(hr == WINCODEC_ERR_COMPONENTNOTFOUND); // 不支持的图像编码格式
+            assert(hr == WINCODEC_ERR_COMPONENTNOTFOUND); // Unsupported image encoder format
         }
         return m_encoder != nullptr;
     }
@@ -25,7 +26,7 @@ private:
         IWICStreamPtr   tmp;
         g_factory->CreateStream(&tmp);
         m_stream = tmp;
-        return (tmp->InitializeFromFilename(filepath, GENERIC_WRITE) == S_OK); // 如果文件写保护会失败
+        return (tmp->InitializeFromFilename(filepath, GENERIC_WRITE) == S_OK); // Fails if file is write-protected
     }
 
 public:
@@ -96,11 +97,9 @@ public:
         }
     }
 
-    HGLOBAL GetEncodedMemory() const
+    IStream* GetEncodedStream() const
     {
-        HGLOBAL   mem{};
-        ::GetHGlobalFromStream(m_stream, &mem);
-        return mem;
+        return m_stream;
     }
 
 private:
@@ -165,14 +164,15 @@ private:
     }
 
     template<typename T>
-    static void WriteProperty(IPropertyBag2* prop, std::wstring propname, T value, VARTYPE type = VT_EMPTY)
+    static void WriteProperty(IPropertyBag2* prop, PCWSTR propname, T value, VARTYPE type = VT_EMPTY)
     {
         _variant_t   val(value);
         if (type == VT_BOOL)
             val.vt = type;
 
-        PROPBAG2   str = { .pstrName = propname.data() }; // requires writable pointer
+        PROPBAG2   str = { .pstrName = const_cast<PWSTR>(propname) }; // requires writable pointer
         if (prop) { prop->Write(1, &str, &val); }
     }
 };
+
 _PHOXO_NAMESPACE_END

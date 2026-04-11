@@ -39,6 +39,7 @@ using std::unique_ptr, std::make_unique;
 _PHOXO_NAMESPACE_END
 
 //-------------------------------------------------------------------------------------
+#include "win32_hglobal.h"
 #include "color.h"
 #include "utils.h"
 #include "math.h"
