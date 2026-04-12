@@ -33,6 +33,8 @@ public:
     {
         return m_dc;
     }
+
+    BitmapHDC(const BitmapHDC&) = delete;
 };
 
 _PHOXO_NAMESPACE_END

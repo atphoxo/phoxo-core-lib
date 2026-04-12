@@ -17,7 +17,7 @@ void ApplyBrightness(const auto& img)
 {
     FImage   tmp = img;
     eff::BrightnessContrast   cmd(60, 10);
-    cmd.EnableParallel(true);
+    cmd.EnableParallel();
     tmp.ApplyEffect(cmd);
     CodecGdiplus::SaveFile(L"d:\\phoxo_corelib_test_brightness.jpg", tmp);
     std::cout << "The image with the applied effect has been saved to d:\\phoxo_corelib_test_brightness.jpg." << std::endl;
@@ -27,7 +27,7 @@ void ApplyBlur(const auto& img)
 {
     FImage   tmp = img;
     eff::StackBlur   cmd(32);
-    cmd.EnableParallel(true);
+    cmd.EnableParallel();
     tmp.ApplyEffect(cmd);
     CodecGdiplus::SaveFile(L"d:\\phoxo_corelib_test_blur.jpg", tmp);
     std::cout << "The image with the applied effect has been saved to d:\\phoxo_corelib_test_blur.jpg." << std::endl;
@@ -37,7 +37,7 @@ void ApplyRotate90(const auto& img)
 {
     FImage   tmp = img;
     eff::Rotate90   cmd;
-    cmd.EnableParallel(true);
+    cmd.EnableParallel();
     tmp.ApplyEffect(cmd);
     CodecGdiplus::SaveFile(L"d:\\phoxo_corelib_test_rotate90.jpg", tmp);
     std::cout << "The image with the applied effect has been saved to d:\\phoxo_corelib_test_rotate90.jpg." << std::endl;
