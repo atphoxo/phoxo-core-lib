@@ -77,4 +77,14 @@ public:
     }
 };
 
+template<typename Func>
+class ScopeGuard
+{
+private:
+    Func   m_func;
+public:
+    explicit ScopeGuard(Func&& fn) : m_func(std::forward<Func>(fn)) {}
+    ~ScopeGuard() { m_func(); }
+};
+
 _PHOXO_NAMESPACE_END
