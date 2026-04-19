@@ -55,7 +55,7 @@ namespace WIC
         {
             ext.MakeLower();
             ext = L"," + ext + L",";
-            for (auto& iter : s_decoders)
+            for (const auto& iter : s_decoders)
             {
                 if (wcsstr(iter.m_exts, ext))
                     return iter.m_format;

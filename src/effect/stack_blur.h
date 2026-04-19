@@ -16,7 +16,7 @@ _PHOXO_INTERNAL_BEGIN
 struct KernelInfo : public std::vector<int>,
                     public BlurParams
 {
-    KernelInfo(auto& param) : BlurParams(param)
+    KernelInfo(const auto& param) : BlurParams(param)
     {
         r = std::clamp(r, 1, 500);
         resize(2 * r + 1);
@@ -35,7 +35,7 @@ struct LineBuffer : public std::vector<Color>
     KernelCRef   m_kernel;
     const int   m_width_or_height;
 
-    LineBuffer(auto& kernel, int width_or_height) : m_kernel(kernel), m_width_or_height(width_or_height)
+    LineBuffer(const auto& kernel, int width_or_height) : m_kernel(kernel), m_width_or_height(width_or_height)
     {
         resize(width_or_height + 2 * kernel.r + 4); // +2 is enough
     }
@@ -77,10 +77,10 @@ private:
     double   sr = 0, sg = 0, sb = 0, sa = 0;
 
 public:
-    StackSum(auto& kn) : m_kernel(kn) {}
+    StackSum(const auto& kn) : m_kernel(kn) {}
 
-    void Add(auto* px) { AddWeight(px, 1); }
-    void Sub(auto* px) { AddWeight(px, -1); }
+    void Add(const auto* px) { AddWeight(px, 1); }
+    void Sub(const auto* px) { AddWeight(px, -1); }
 
     void AddWeight(const Color* px, int weight)
     {
@@ -110,7 +110,7 @@ struct InputPixelView
 {
     const Color   * m_begin, * m_split, * m_end; // ->1 2 3 4 ->5 6 7 ->X
 
-    InputPixelView(auto& buf) : m_begin(buf.data())
+    InputPixelView(const auto& buf) : m_begin(buf.data())
     {
         m_split = m_begin + buf.m_kernel.r + 1;
         m_end = m_begin + buf.m_kernel.size() + 1; // 因为计算first时in多+1
@@ -126,7 +126,7 @@ private:
     StackSum   m_out, m_in, m_stack;
 
 public:
-    LineCalculator(auto& buf) : m_buf(buf), m_out(buf.m_kernel), m_in(buf.m_kernel), m_stack(buf.m_kernel) {}
+    LineCalculator(const auto& buf) : m_buf(buf), m_out(buf.m_kernel), m_in(buf.m_kernel), m_stack(buf.m_kernel) {}
 
     void OutputLine(Color* dest, int pixel_span)
     {
@@ -174,7 +174,7 @@ class StackBlurAxisBase : public ImageEffect
 protected:
     KernelCRef   m_kernel;
 public:
-    StackBlurAxisBase(auto& kn) : m_kernel(kn) {}
+    StackBlurAxisBase(const auto& kn) : m_kernel(kn) {}
 private:
     bool IsSupported(const Image& img) final { return true; }
 };

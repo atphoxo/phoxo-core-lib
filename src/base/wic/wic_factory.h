@@ -51,6 +51,17 @@ namespace WIC
         return t;
     }
 
+    inline IWICBitmapPtr CreateBitmapFromSourceRect(IWICBitmapSource* src, const CRect& region)
+    {
+        IWICBitmapPtr   t;
+        if (CRect rc; rc.IntersectRect(CRect({}, GetBitmapSize(src)), region))
+        {
+            assert(rc == region);
+            g_factory->CreateBitmapFromSourceRect(src, rc.left, rc.top, rc.Width(), rc.Height(), &t);
+        }
+        return t;
+    }
+
     inline IWICBitmapPtr EnsureBitmapCreated(IWICBitmapSource* src)
     {
         if (IWICBitmapPtr t = src)
