@@ -20,7 +20,7 @@ public:
     {
         double   h, s, l;
         RGBtoHSL(px, h, s, l);
-        s = s * (1 + m_saturation);
+        s = std::clamp(s * (1 + m_saturation), 0.0, 1.0);
         HSLtoRGB(h, s, l, px);
     }
 
@@ -31,13 +31,18 @@ public:
 
     static void HSLtoRGB(double h, double s, double l, Color* out)
     {
-        if (s == 0)
+        if (s < 1e-4) // s == 0, achromatic (gray)
         {
             out->r = out->g = out->b = Math::Clamp0255(l * 255);
         }
         else
         {
-            double   q = (l < 0.5 ? l * (1 + s) : l + s - l * s);
+            double   q;
+            if (l < 0.5)
+                q = l * (1 + s);
+            else
+                q = l + s - l * s;
+
             double   p = 2 * l - q;
             out->r = Math::Clamp0255(hue2rgb(p, q, h + 1.0 / 3) * 255);
             out->g = Math::Clamp0255(hue2rgb(p, q, h) * 255);

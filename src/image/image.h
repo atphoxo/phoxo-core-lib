@@ -35,7 +35,7 @@ public:
 
     Image(const Image& img) { *this = img; } ///< copy constructor
 
-    Image(Image&& img) { Swap(img); } ///< move constructor
+    Image(Image&& img) noexcept { Swap(img); } ///< move constructor
 
     ~Image() { Destroy(); } ///< destructor (non-virtual)
 
@@ -53,7 +53,7 @@ public:
     }
 
     /// move assignment
-    Image& operator=(Image&& other)
+    Image& operator=(Image&& other) noexcept
     {
         if (&other == this) { assert(false); return *this; } // check self-assignment
         Destroy();
@@ -97,7 +97,7 @@ public:
     }
 
     /// swap data with another image
-    void Swap(Image& img)
+    void Swap(Image& img) noexcept
     {
         std::swap(img.m_attribute, m_attribute);
         std::swap(img.m_width, m_width);
