@@ -17,15 +17,16 @@ enum class ColorChannel
 union Color
 {
 public:
-    RGBQUAD   quad;
+    RGBQUAD    quad;
     struct { BYTE b, g, r, a; };
-    int32_t   val;
+    uint32_t   val;
 
 public:
     constexpr Color() : val(0) {}
 
     explicit constexpr Color(RGBQUAD c) : quad(c) {}
     explicit constexpr Color(int32_t c) : val(c) {}
+    explicit constexpr Color(uint32_t c) : val(c) {}
 
     /// Initialize using Gdiplus: Color c(Gdiplus::Color::Red);
     /// Initialize using D2D: Color c(D2D1::ColorF::Red, 0xFF);
@@ -48,7 +49,7 @@ public:
         return Gdiplus::Color(a, r, g, b);
     }
 
-    void operator=(int32_t c) { val = c; }
+    void operator=(uint32_t c) { val = c; }
     void operator=(const RGBQUAD& c) { quad = c; }
 
     bool operator==(const Color& c) const { return val == c.val; }
