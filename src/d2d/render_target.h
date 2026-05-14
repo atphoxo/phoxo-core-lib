@@ -32,24 +32,11 @@ namespace D2D
     }
     _PHOXO_NAMESPACE_END
 
-    inline void BindDC(ID2D1DCRenderTarget* render, HDC dc)
-    {
-        CSize   dcsize = Utils::GetBitmapSize((HBITMAP)GetCurrentObject(dc, OBJ_BITMAP));
-        if (render && dcsize.cx)
-        {
-            render->BindDC(dc, CRect({}, dcsize));
-        }
-    }
-
-    inline ID2D1DCRenderTargetPtr CreateDCRenderTarget(D2D1_RENDER_TARGET_TYPE type, HDC bind_hdc = NULL)
+    inline ID2D1DCRenderTargetPtr CreateDCRenderTarget(D2D1_RENDER_TARGET_TYPE type)
     {
         auto   prop = internal::BuildProperties(type);
         ID2D1DCRenderTargetPtr   ret;
         g_factory->CreateDCRenderTarget(&prop, &ret);
-        if (bind_hdc)
-        {
-            D2D::BindDC(ret, bind_hdc);
-        }
         return ret;
     }
 
@@ -131,8 +118,9 @@ namespace D2D
         if (ret.Create((int)ceil(metrics.width), (int)ceil(metrics.height)))
         {
             BitmapHDC   memdc(ret);
-            if (auto target = CreateDCRenderTarget(D2D1_RENDER_TARGET_TYPE_SOFTWARE, memdc))
+            if (auto target = CreateDCRenderTarget(D2D1_RENDER_TARGET_TYPE_SOFTWARE))
             {
+                target->BindDC(memdc, CRect({}, ret.Size()));
                 target->BeginDraw();
                 target->Clear({ 0,0,0,0 });
                 DrawTextLayout(target, { 0,0 }, layout, D2D1::ColorF::Black);
