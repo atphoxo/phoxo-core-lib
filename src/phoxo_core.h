@@ -28,6 +28,7 @@
 #include "codec_wic/codec_wic.h"
 
 #include "d2d/render_target.h"
+#include "d2d/shared_resources.h"
 #include "d2d/svg_drawer.h"
 
 // effect
@@ -70,6 +71,7 @@ public:
 
     static void Uninit()
     {
+        D2D::ResetSharedResources();
         D2D::g_factory = nullptr;
         WIC::g_factory = nullptr;
         Gdiplus::GdiplusShutdown(m_token);
